@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Hibiscus Dissection • A-Frame</title>
+  <meta name="description" content="Hibiscus Dissection • A-Frame">
+  
+<!--   This is a series of components and plugins used -->
+<!-- AFrame webXR Library  ver 1.2.0 -->
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+<!-- Superhands allows drag and rotation function -->
+<script src="./superhands.js"></script>  
+<!--Environment Component  -->
+  <script src="./environment-component.js"></script>
+<!--Buttons and other event system uses event-set component and proxy events -->
+  <script src="./eventset.js"></script> 
+  <script src="./proxy-event.js"></script>
+<!--   Physics isn't used in a major way but is loaded in to support development -->
+  <script src="./aframeextras.js'"></script>
+<!-- GSAP (GreenSock Animation Platform) for animation addons like tweening -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.0/gsap.min.js"></script>
+  <script type="module">
+    import "./GreenSockThree.js";
+  </script>
+  
+<!--   The layout of buttons utilizes layout component and text positioning uses look-at-->
+<script src="./layout.js"></script> 
+    <script src="./lookat.js"></script> 
+  
+<!--   Several unique examination box components -->
+  <script src="./ExaminationBox.js"></script>
+  <script src="./Examinable.js"></script>
+  <script src="./Rotatable.js"></script>
+  <script src="./ExamineCallout.js"></script>
+  <script src="./ScaleButton.js"></script>
+  <script src="./ContextButton.js"></script>
+  <script src="./ContextAnimPlay.js"></script>
+  <script src="./ContextVisibility.js"></script>
+  <script src="./ExamineAudioButton.js"></script>
+  <script src="./Gridable.js"></script>
+  <script src="./Tabselector.js"></script>
+  <script src="./ClickDrag.js"></script>
+  <script src="./HoverCallout.js"></script>
+  
+  <script src="./linkhref.js"></script>
+<script src="./info-message.js"></script>
+
+</head>
+<body>
+  
+<a-scene 
+      webxr="referenceSpaceType: local"
+      cursor="rayOrigin: mouse; fuse: false" raycaster="objects: .raycastable"
+      event-set__click="_event:click;"
+         background="color:  #cd990a"
+      info-message="htmlSrc: #messageText"
+         >
+  
+<!-- Media assets used throughout experience    -->
+  <a-assets>
+    
+<!--     This html document feeds the 'info' popup in the corner, it can have images and links embedded -->
+            <a-asset-item id="messageText" src="message.html"></a-asset-item>
+    
+<!--   These are the models for the splash screen marquee -->
+        <a-asset-item id="splash" src="./assets/HibiscusSplashModel_exterior.gltf"  preload="auto"></a-asset-item>
+        <a-asset-item id="splashinsert" src="./assets/HibiscusSplashModel_interior.gltf" preload="auto"></a-asset-item>
+   
+<!-- White table seen beneath interactions      -->
+    <a-asset-item id="table" src="./assets/TableOpenSlate.glb" preload="auto"></a-asset-item>
+    
+<!--   Globe-like observation 'container box' -->
+    <a-asset-item id="containerBox" src="./assets/GlowGlobe2.glb" preload="auto"></a-asset-item>
+    
+<!-- Template image for text field beneath observation container -->
+    <a-image id="calloutBg" src="./assets/Callout_BG.png" preload="auto"></a-image>
+    
+    
+    <a-asset-item id="skyHDRI" src="./assets/noon_grass_1k.hdr" preload="auto"></a-asset-item>
+    <a-asset-item id="speakerIcon" src="./assets/SpeakerIcon.glb" preload="auto"></a-asset-item>
+    <a-asset-item id="buttonLeft" src="./assets/buttons_left.glb" preload="auto"></a-asset-item>
+    <a-asset-item id="buttonRight" src="./assets/buttons_right.glb" preload="auto"></a-asset-item> 
+    <a-asset-item id="buttonIn" src="./assets/buttons_plus.glb" preload="auto"></a-asset-item>
+    <a-asset-item id="buttonOut" src="./assets/buttons_minus.glb" preload="auto"></a-asset-item>
+    <a-asset-item id="buttonReset" src="./assets/buttons_reset.glb" preload="auto"></a-asset-item>
+    <a-asset-item id="buttonSpecOff" src="./assets/buttons_spec_off.glb" preload="auto"></a-asset-item>
+    <a-asset-item id="buttonSpecOn" src="./assets/buttons_spec_on.glb" preload="auto"></a-asset-item>
+    <a-asset-item id="buttonExpand" src="./assets/buttons_expand.glb" preload="auto"></a-asset-item>
+    <a-asset-item id="buttonGrid" src="./assets/buttons_grid.glb" preload="auto"></a-asset-item>
+
+    <audio id="epicalyxVO" src="./assets/Tallis_Hibiscus_01.wav" preload="auto"></audio>
+    <audio id="sepalVO" src="./assets/Tallis_Hibiscus_02.wav" preload="auto"></audio>
+    <audio id="petalVO" src="./assets/Tallis_Hibiscus_03.wav" preload="auto"></audio>
+    <audio id="stamenVO" src="./assets/Tallis_Hibiscus_04.wav" preload="auto"></audio>
+    <audio id="pistilVO" src="./assets/Tallis_Hibiscus_05.wav" preload="auto"></audio>
+    <audio id="overyVO" src="./assets/Tallis_Hibicus_06.wav" preload="auto"></audio>
+    <audio id="overviewVO" src="./assets/Tallis_Hibicus_07.wav" preload="auto"></audio>
+    
+<!--     Text for the various anatomical callouts are supplied via mixin -->
+    
+     <a-mixin id="sepalSpec" 
+              examinable="headerText: Hibiscus Sepal;
+                          contentText: Sepals are the outermost whorl of the flower and are part of the perianth. They are collectively called the calyx.;
+                          audioClipUrl: #sepalVO;
+                          centerOffset: 0, 0, 0;"></a-mixin>
+    <a-mixin id="petalSpec" 
+              examinable="headerText: Hibiscus Petal;
+                          contentText: Petals are the inner whorl of the perianth. They are collectively called the corolla.;
+                          audioClipUrl: #petalVO;
+                          centerOffset: 0, 0, 0;"></a-mixin>
+       
+        <a-mixin id="epicalyxSpec" 
+              examinable="headerText: Hibiscus Epicaylx;
+                          contentText: Staminodes are sterile stamens that do not produce fertile pollen and can have a variety of other functions.;
+                          audioClipUrl: #epicalyxVO;
+                          centerOffset: 0, 0, 0;"></a-mixin>
+        <a-mixin id="pistilSpec" 
+              examinable="headerText: Hibiscus Pistil;
+                          contentText: The pistil consists of an ovary, style, and stigma. The ovary produces ovules and nourishes them as they develop into seeds.;
+                          audioClipUrl: #pistilVO;
+                          centerOffset: 0, 0, 0;"></a-mixin>
+        <a-mixin id="overySpec" 
+              examinable="headerText: Hibiscus Ovary;
+                          contentText: The ovary has three chambers (locules) separated by walls (septa). Each locule contains two rows of ovules that will mature into seeds.;
+                          audioClipUrl: #ovaryVO;"></a-mixin>
+        <a-mixin id="stamenSpec" 
+              examinable="headerText: Hibiscus Stamen;
+                          contentText: Each stamen consists of a stalk called the filament and an anther. Pollen is produced inside the chambers of the anther.;
+                          audioClipUrl: #stamenVO;
+                          centerOffset: 0, 0, 0;"></a-mixin> 
+                          
+        
+       
+<!--     Anatomical Models -->
+    <a-asset-item id="petalmodel1" 
+                      src="./assets/Hibiscus_Base_Petal01.gltf" preload="auto"></a-asset-item>
+    <a-asset-item id="petalmodel2" 
+                      src="./assets/Hibiscus_Base_Petal02.gltf" preload="auto"></a-asset-item>
+    <a-asset-item id="petalmodel3" 
+                      src="./assets/Hibiscus_Base_Petal03.gltf" preload="auto"></a-asset-item>
+    <a-asset-item id="petalmodel4" 
+                      src="./assets/Hibiscus_Base_Petal04.gltf" preload="auto"></a-asset-item>
+    <a-asset-item id="petalmodel5" 
+                      src="./assets/Hibiscus_Base_Petal05.gltf" preload="auto"></a-asset-item>
+    <a-asset-item id="sepalsEpicalyx" 
+                      src="./assets/Hibiscus_Base_Sepals_Epicalyx.gltf" preload="auto"></a-asset-item>
+    <a-asset-item id="sexOrgans" 
+                      src="./assets/Hibiscus_Base_SexualOrgans.gltf" preload="auto"></a-asset-item>
+    <a-asset-item id="stamens" 
+                      src="./assets/Hibiscus_Base_Stamens.gltf" preload="auto"></a-asset-item>
+
+
+
+    
+<!-- Sounds used within the interaction system-->
+<a-sound id="click1" src="./assets/click1dry.mp3"></a-sound>
+<a-sound id="click2" src="./assets/click2dry.mp3"></a-sound>
+<a-sound id="click3" src="./assets/click3dry.mp3"></a-sound>
+<a-sound id="clickyes" src="./assets/clickYesdry.mp3"></a-sound>  
+<a-sound id="clickno" src="./assets/clickNodry.mp3"></a-sound>    
+  </a-assets>
+
+<!-- At the minimum we'd also want to setup an environment light, although we might also need to explore background options -->
+<a-sky id="sky" phi-start="45" src="./assets/backdrop.png" opacity="0"></a-sky>
+  <a-light id="sun" angle="60" color="#FFF" intensity="1" type="ambient"></a-light>
+
+         
+<!-- Camera rig serves as user perspective. User cannot pivot camera and raycast emits from this view-->
+  <a-entity id="rig" position="0 1.55 0.115" rotation="0 -19.1 0" >
+    <a-entity id="eyes"
+              camera=""
+              look-controls="mouseEnabled: false"
+              position="-0.11 0 -0.66"
+              rotation="0 -23.4 0"
+              raycaster="objects: .dissect; direction: 0 0 0;" 
+              cursor="rayOrigin:mouse"
+              static-body="shape: sphere; sphereRadius: 0.001"
+              super-hands="colliderEvent: raycaster-intersection;
+                             colliderEventProperty: els;
+                             colliderEndEvent:raycaster-intersection-cleared;
+                             colliderEndEventProperty: clearedEls;">
+        <a-entity
+          id="fadeBackground"
+          geometry="primitive: sphere; radius: 2.5"
+          material="color: black; side: back; shader: flat; transparent: true; opacity: 0.6" visible="false">
+        </a-entity>
+      </a-entity> </a-entity> 
+    
+
+ 
+  
+  
+      
+      <!--This is a random light that looks good on the splash   -->
+          <a-entity id="splashscreencomplex" position="0.298 -2.766 0.116" scale="0.802 0.802 0.802">
+  <a-entity id="splashlight" light="type: point; intensity: 0.3; castShadow: false; penumbra: 1" animation="property: position; to: 0 16 0;dir :alternate; loop: 999; dur: 30000"></a-entity>   
+
+<a-entity  id="splashscreeninsert"
+
+  
+ class="dissect" 
+ position="0 0 0"
+ gltf-model="#splashinsert"
+ scale="1 1 1"
+ rotation="0 0 0"               
+        
+        event-set__splash1 = "
+                _delay : 100; 
+                _event : click;
+                _target : #splashscreeninsert;
+                animation.property : position;
+                animation.to: -0.083 3.303 -1.237;
+                animation.dur: 500"
+                  
+               event-set__splash2 = "
+                _delay : 1200;
+                _event : click;
+                _target : #splashscreen;
+                animation.property : position;
+                animation.to: -0.083 5.303 -1.237; _dur: 500"
+                
+              event-set__splashdim = "
+                _delay : 600;
+                _event : click;
+                _target : #splashlight;
+                animation.property : light.intensity;
+                animation.to: 0.2;"
+          
+          event-set__eyeopen = "
+                _event : click;
+                 _target : #sky;
+                 animation.property : opacity;
+                 animation.to: 1;
+                animation.dur: 1000"
+                          >  </a-entity>
+<a-entity  id="splashscreen"
+
+  
+ class="dissect" 
+ position="0 0 0"
+ gltf-model="#splash"
+ scale="1 1 1"
+ rotation="0 0 0"               
+        
+        event-set__splash1 = "
+                _delay : 100; 
+                _event : click;
+                _target : #splashscreeninsert;
+                animation.property : position;
+                animation.to: -0.083 3.303 -1.237;
+                animation.dur: 500"
+                  
+               event-set__splash2 = "
+                _delay : 1200;
+                _event : click;
+                _target : #splashscreen;
+                animation.property : position;
+                animation.to: -0.083 5.303 -1.237; _dur: 500"
+                
+              event-set__splashdim = "
+                _delay : 600;
+                _event : click;
+                _target : #splashlight;
+                animation.property : light.intensity;
+                animation.to: 0.2;"
+          
+          event-set__eyeopen = "
+                _event : click;
+                 _target : #sky;
+                 animation.property : opacity;
+                 animation.to: 1;
+                animation.dur: 1000" 
+                  >  </a-entity>
+             </a-entity>
+  
+  
+  
+  
+  
+  
+  
+  
+<a-sky id="sky" phi-start="45" src="./assets/backdrop.png" opacity="0"></a-sky>
+
+  
+  
+  
+  
+  
+  
+  <a-entity id="tabselection"
+            tabselector
+            geometry="primitive: sphere;"
+            scale="0.1, 0.1, 0.1"
+            >
+  </a-entity>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+<!-- Wholespecimincontrol is a container element for all the draggable anatomy models in the dissection simulation    -->
+<a-entity id="wholespecimencontrol" 
+          position="-0.15 1.116 -1.69" 
+          rotation="-90 -457.8389044739884 -1.690" 
+          geometry="primitive: ring; radiusInner: 0.1; radiusOuter: 0.2" 
+          mixin="" 
+          class="dissect" 
+          rotatable="targetId: hibiscuswholedissection; rotateZ: false">
+  </a-entity>
+  
+  <a-text id="callouttext" text="color: #000000; value: " position="-0.731 3.2 -3.818" scale="" rotation="23.218105811951983 14.442172100685982 0"></a-text>
+   
+    <a-entity id="hibiscuswholedissection" position="-0.15 1.216 -1.69" rotation="0 -58 0">
+      
+   
+<!--   Stamens have a text field for when they're hovered. Each stamen is then defined as an entity with raycast collision and events.-->
+    
+      <a-entity id="stamens">    
+      
+       <a-entity id="hibiscusstamen" 
+                mixin="stamenSpec" 
+                 class="dissect" 
+                 hoverable clickdrag="centerOffset: 0 0 0" gridable
+                 shadow 
+                scale="0.09 0.09 0.09"
+                       hovercallout="hoverText: Stamen;"
+                 gltf-model="#stamen"
+                 >
+                 
+          
+          </a-entity>
+</a-entity>
+    
+
+   
+    <a-entity id="petals" 
+                hovercallout="hoverText: Petal;">
+      
+             <a-entity id="hibiscuspetal1" 
+                mixin="petalSpec" 
+                 class="dissect" 
+                hoverable clickdrag="centerOffset: 0 0 0"
+                gridable
+                 shadow 
+                scale="0.09 0.09 0.09"
+                gltf-model="#petalmodel1"
+                 >
+          </a-entity>
+
+          <a-entity id="hibiscuspetal2" 
+          mixin="petalSpec" 
+           class="dissect" 
+          hoverable clickdrag="centerOffset: 0 0 0" gridable
+           shadow 
+          scale="0.09 0.09 0.09"
+          gltf-model="#petalmodel2"
+           >
+    </a-entity>
+    <a-entity id="hibiscuspetal3" 
+    mixin="petalSpec" 
+     class="dissect" 
+    hoverable clickdrag="centerOffset: 0 0 0" gridable
+     shadow 
+    scale="0.09 0.09 0.09"
+    gltf-model="#petalmodel3"
+     >
+</a-entity>
+<a-entity id="hibiscuspetal4" 
+mixin="petalSpec" 
+ class="dissect" 
+hoverable clickdrag="centerOffset: 0 0 0" gridable
+ shadow 
+scale="0.09 0.09 0.09"
+gltf-model="#petalmodel4"
+ >
+</a-entity>
+<a-entity id="hibiscuspetal5" 
+mixin="petalSpec" 
+ class="dissect" 
+hoverable clickdrag="centerOffset: 0 0 0" gridable
+ shadow 
+scale="0.09 0.09 0.09"
+gltf-model="#petalmodel5"
+ >
+</a-entity>
+        </a-entity> 
+
+    <a-entity id="sepals" hovercallout="hoverText: Sepal">
+
+      <a-entity id="hibiscusSepalsEpicalyx" 
+        mixin="sepalSpec" 
+         class="dissect" 
+        hoverable clickdrag="centerOffset: 0 0 0" gridable
+         shadow 
+        scale="0.09 0.09 0.09"
+        gltf-model="#sepalsEpicalyx"
+         ></a-entity>
+    </a-entity>
+
+<!--   Pistil a text field for when they're hovered. Pistil is then defined as an entity with raycast collision and events.-->
+    
+       <a-entity id="hibiscussexparts">
+      
+             <a-entity id="hibiscussexpart" 
+                mixin="pistilSpec" 
+                 class="dissect"
+               hovercallout="hoverText: Pistil;"
+                hoverable clickdrag="centerOffset: 0 0 0" gridable
+                shadow                 
+                scale="0.09 0.09 0.09"
+               gltf-model="#sexOrgans"
+                 >
+          </a-entity>
+      </a-entity>
+   
+                </a-entity>
+
+  
+    
+      <!-- Hand controls are defined to get raycast capability to allow button interaction while using them -->
+      <a-entity id="leftHand" laser-controls="hand: left" raycaster="objects: .raycastable"></a-entity>
+      <a-entity id="rightHand" laser-controls="hand: right" raycaster="objects: .raycastable" line="color: #118A7E"></a-entity>
+
+<!--The table asset is put in place    -->
+    <a-entity gltf-model="#table" scale = "0.7 0.7 0.7" position="0 0 -0.466" rotation="0 90 0"></a-entity>
+
+<!--Exambox is put in scene. Some of these fields are specific to the examinationBox.js file. Text fields are established with examinetextheader and examinetextbody occupying spaces on #calloutBg  -->
+  <a-entity id="ExamBox" gltf-model="#containerBox" position="0.945 1.125 -1.200" rotation="0 11.705 0" scale="0.4 0.4 0.4" exambox="snapedRotation: 45 0 0; snapedScale: 0.6 0.6 0.6; snapedOffset:0 0.6 0" >
+             <a-entity id="examinecallout"
+                     geometry="primitive: plane; height: 0.5"
+                       position="-0.5 0.5 0.2"
+                       rotation="0 -66 0"
+                       material="src: #calloutBg"
+                       opacity="0"
+                       examinecallout>
+               <a-entity id="examinetextheader" text="value: Welcome; transparent : true"  position="0.138 0.166 0.006" scale="1.2 1.2 1.2"></a-entity>
+               <a-entity id="examinetextbody" text="value: C; transparent : true" position="0.008 -0.008 0.004"></a-entity>
+               <a-entity id="examineAudioButton" class="dissect" gltf-model="#speakerIcon" examineaudio position="0.26 -0.153 0.073" scale="0.025 0.025 0.025"></a-entity>
+               <a-entity id="LeftCalloutButton" class="dissect" gltf-model="#buttonLeft" position="-0.380 -0.153 0.073" scale="0.025 0.025 0.025"></a-entity>
+               <a-entity id="RightCalloutButton" class="dissect" gltf-model="#buttonRight" position="0.403 -0.153 0.073" scale="0.025 0.025 0.025"></a-entity>
+               <a-entity id="ExpandButton" class="dissect" gltf-model="#buttonExpand" position="0.415 0.181 0.075" scale="0.025 0.025 0.025"></a-entity>
+               <a-entity id="attachPoint"></a-entity>
+    </a-entity>
+  </a-entity>
+  
+  
+  
+<!--   UI system test object
+      <a-entity  id="totem" class="dissect" rotatable gltf-model="#totemhalf" position="0.91 1.303 -0.838" scale="0.03 0.03 0.03" rotation="0 125 0">
+  <a-entity  id="totemphantom" rotatable class="dissect" gltf-model="#totemfull" visible="false"></a-entity></a-entity>-->
+
+  <!--   UI system buttons to emit proxy events -->
+ 
+  <a-entity id="ExaminationScaleUI" layout="margin: 1.35; angle: NaN; columns: 3" scale="0.075 0.075 0.05" position="0.624 1.204 -1.120" rotation="0 -55 0">
+  <a-box id="scale1button" scale="0.3 0.3 0.3" class="dissect" position="" scalebutton="scaleDelta: -0.05; scaleMin: 0.1" gltf-model="#buttonOut"
+         sound="src: #click1; on: click"
+
+        
+         event-set__lightscale1light = "
+                _event : click;
+                _target : #scale1light;
+                animation.property : light.intensity;
+                animation.to: 20;"
+         
+         event-set__dimscale2light = "
+                _event : click;
+                _target : #scale2light;
+                animation.property : light.intensity;
+                animation.to: 0;"
+        
+         event-set__dimscale3light = "
+                _event : click;
+                _target : #scale3light;
+                animation.property : light.intensity;
+                animation.to: 0;">
+    <a-entity id="scale1light" light="type:  point;  color:  #ebe7e0;  decay:  1.5;  distance:  0.075;  intensity:  0"></a-entity>
+    
+    </a-box>
+  
+  <a-box id="scale2button" scale="0.3 0.3 0.3" class="dissect" position="2 0 0" material="color: #56b4e9; opacity: 0.65" scalebutton="scaleDelta: 0; scaleMax: 0.6" gltf-model="#buttonReset"
+         sound="src: #click2; on: click"
+         
+         event-set__scaled2 = "
+                _event : click;
+                _target : #attachPoint;
+                animation.property : scale;
+                animation.to: 0.03 0.03 0.03;"
+         
+        event-set__lightscale2light = "
+                _event : click;
+                _target : #scale2light;
+                animation.property : light.intensity;
+                animation.to: 20;"
+         
+         event-set__dimscale1light = "
+                _event : click;
+                _target : #scale1light;
+                animation.property : light.intensity;
+                animation.to: 0;"
+        
+         event-set__dimscale3light = "
+                _event : click;
+                _target : #scale3light;
+                animation.property : light.intensity;
+                animation.to: 0;" >
+    
+    <a-entity id="scale2light" light="type:  point;  color:  #56b4e9;  decay:  1.5;  distance:  0.075;  intensity:  20"></a-entity></a-box>
+  
+  <a-box id="scale3button" scale="0.3 0.3 0.3" class="dissect" position="4 0 0" material="color: #0072b2; opacity: 0.65" scalebutton="scaleDelta: 0.05; scaleMax: 0.6" gltf-model="#buttonIn"
+         sound="src: #click3; on: click"
+         
+         event-set__scaled3 = "
+                _event : click;
+                _target : #attachPoint;
+                animation.property : scale;
+                animation.to: 0.06 0.06 0.06;"
+         
+        event-set__lightscale3light = "
+                _event : click;
+                _target : #scale3light;
+                animation.property : light.intensity;
+                animation.to: 20;"
+         
+         event-set__dimscale1light = "
+                _event : click;
+                _target : #scale1light;
+                animation.property : light.intensity;
+                animation.to: 0;"
+        
+         event-set__dimscale2light = "
+                _event : click;
+                _target : #scale2light;
+                animation.property : light.intensity;
+                animation.to: 0;" 
+         >
+  <a-entity id="scale3light" light="type:  point;  color:  #0072b2;  decay:  1.5;  distance:  0.075;  intensity:  0"></a-entity>
+
+    </a-box>
+</a-entity>
+ 
+<!--
+<a-entity id="ExaminationToggleUI" layout="margin: 3; angle: NaN; columns: 2" scale="0.05 0.05 0.05" position="0.922 1.273 -0.864" rotation="0 130.5 0">
+  <a-cylinder id="ContextButton" class="dissect" position="" scale="-0.5 0.5 -0.5" material="color: #55D142; opacity: 0.65" 
+              contextbutton="onGltfUrl: https://cdn.glitch.com/9e3ddbc0-bfb3-4240-8716-a793e4bd6483%2Fbuttons_spec_on.glb?v=1624903611959;
+                             offGltfUrl: https://cdn.glitch.com/9e3ddbc0-bfb3-4240-8716-a793e4bd6483%2Fbuttons_spec_off.glb?v=1625180387523" gltf-model="#buttonSpecOff"
+              sound="src: #clickyes; on: click; poolSize: 20;"
+        
+         event-set__lighttoggle1light = "
+                _event : click;
+                _target : #toggle1light;
+                animation.property : light.intensity;
+                animation.to: 3;"
+         
+         event-set__dimtoggle2light = "
+                _event : click;
+                _target : #toggle2light;
+                animation.property : light.intensity;
+                animation.to: 0;">
+    <a-entity id="toggle1light" light="type:  point;  color:  #FFFFFF  decay:  1.5;  distance:  0.075;  intensity:  0"></a-entity>
+    </a-cylinder>
+   </a-entity> -->
+  
+  <a-box id="gridbutton" scale="0.023 0.023 0.023" class="dissect" position="0.088 1.228 -1.433" material="color: #56b4e9; opacity: 0.65" scalebutton="scaleDelta: 0; scaleMax: 0.6" gltf-model="#buttonGrid"
+         sound="src: #click2; on: click"></a-box>
+   
+<!-- <a-entity id="linkbuttonui" scale="0.025 0.025 0.025" position="0.62 1.17 -1.28" rotation="0 49.5 0">
+  <a-entity id="linkbutton" class="dissect" position="-5.95081 0.34945 21.11389" material="color: #D55E00; opacity: 0.65" geometry="" sound="src: clickno; on: click" href="https://plants.ces.ncsu.edu/plants/zephyranthes-atamasco/" target="_blank"></a-entity>
+  </a-entity> -->
+  
+
+  
+</a-scene>
+</body>
