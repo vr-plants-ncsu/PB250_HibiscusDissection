@@ -147,6 +147,8 @@
                       src="./assets/Hibiscus_Base_SexualOrgans.gltf" preload="auto"></a-asset-item>
     <a-asset-item id="stamens" 
                       src="./assets/Hibiscus_Base_Stamens.gltf" preload="auto"></a-asset-item>
+    <a-asset-item id="overy" 
+                      src="./assets/Hibiscus_CrossSection.gltf" preload="auto"></a-asset-item>
 
 
 
@@ -414,6 +416,16 @@ gltf-model="#petalmodel5"
                 shadow                 
                 scale="0.09 0.09 0.09"
                gltf-model="#sexOrgans"
+                 >
+          </a-entity>
+          <a-entity id="hibiscusovery" 
+                mixin="overySpec" 
+                 class="dissect"
+               hovercallout="hoverText: Overy;"
+                hoverable clickdrag="centerOffset: 0 0 0" gridable
+                shadow                 
+                scale="0.09 0.09 0.09"
+               gltf-model="#overy"
                  >
           </a-entity>
       </a-entity>
