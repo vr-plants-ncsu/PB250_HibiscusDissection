@@ -15,7 +15,7 @@
   <script src="./eventset.js"></script> 
   <script src="./proxy-event.js"></script>
 <!--   Physics isn't used in a major way but is loaded in to support development -->
-  <script src="./aframeextras.js'"></script>
+  <script src="./aframeextras.js"></script>
 <!-- GSAP (GreenSock Animation Platform) for animation addons like tweening -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.0/gsap.min.js"></script>
   <script type="module">
@@ -87,13 +87,13 @@
     <a-asset-item id="buttonExpand" src="./assets/buttons_expand.glb" preload="auto"></a-asset-item>
     <a-asset-item id="buttonGrid" src="./assets/buttons_grid.glb" preload="auto"></a-asset-item>
 
-    <audio id="epicalyxVO" src="./assets/Tallis_Hibiscus_01.wav" preload="auto" crossorigin=“anonymous”></audio>
-    <audio id="sepalVO" src="./assets/Tallis_Hibiscus_02.wav" preload="auto" crossorigin=“anonymous”></audio>
-    <audio id="petalVO" src="./assets/Tallis_Hibiscus_03.wav" preload="auto" crossorigin=“anonymous”></audio>
-    <audio id="stamenVO" src="./assets/Tallis_Hibiscus_04.wav" preload="auto" crossorigin=“anonymous”></audio>
-    <audio id="pistilVO" src="./assets/Tallis_Hibiscus_05.wav" preload="auto" crossorigin=“anonymous”></audio>
-    <audio id="overyVO" src="./assets/Tallis_Hibicus_06.wav" preload="auto" crossorigin=“anonymous”></audio>
-    <audio id="overviewVO" src="./assets/Tallis_Hibicus_07.wav" preload="auto" crossorigin=“anonymous”></audio>
+    <a-sound id="epicalyxVO" src="./assets/Tallis_Hibiscus_01.wav" preload="auto" crossorigin=“anonymous”></a-sound>
+    <a-sound id="sepalVO" src="./assets/Tallis_Hibiscus_02.wav" preload="auto" crossorigin=“anonymous”></a-sound>
+    <a-sound id="petalVO" src="./assets/Tallis_Hibiscus_03.wav" preload="auto" crossorigin=“anonymous”></a-sound>
+    <a-sound id="stamenVO" src="./assets/Tallis_Hibiscus_04.wav" preload="auto" crossorigin=“anonymous”></a-sound>
+    <a-sound id="pistilVO" src="./assets/Tallis_Hibiscus_05.wav" preload="auto" crossorigin=“anonymous”></a-sound>
+    <a-sound id="ovaryVO" src="./assets/Tallis_Hibiscus_06.wav" preload="auto" crossorigin=“anonymous”></a-sound>
+    <a-sound id="overviewVO" src="./assets/Tallis_Hibiscus_07.wav" preload="auto" crossorigin=“anonymous”></a-sound>
     
 <!--     Text for the various anatomical callouts are supplied via mixin -->
     
@@ -144,7 +144,7 @@
     <a-asset-item id="sepalsEpicalyx" 
                       src="./assets/Hibiscus_Base_Sepals_Epicalyx.gltf" preload="auto"></a-asset-item>
     <a-asset-item id="sexOrgans" 
-                      src="./assets/Hibiscus_Base_SexualOrgans.gltf" preload="auto"></a-asset-item>
+                      src="./assets/Hibiscus_Base_Lateral.glb" preload="auto"></a-asset-item>
     <a-asset-item id="stamens" 
                       src="./assets/Hibiscus_Base_Stamens.gltf" preload="auto"></a-asset-item>
     <a-asset-item id="overy" 
