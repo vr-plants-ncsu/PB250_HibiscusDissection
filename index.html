@@ -118,7 +118,7 @@
                           contentText: The pistil consists of an ovary, style, and stigma. The ovary produces ovules and nourishes them as they develop into seeds.;
                           audioClipUrl: #pistilVO;
                           centerOffset: 0, 0, 0;"></a-mixin>
-        <a-mixin id="overySpec" 
+        <a-mixin id="ovarySpec" 
               examinable="headerText: Hibiscus Ovary;
                           contentText: The ovary has three chambers (locules) separated by walls (septa). Each locule contains two rows of ovules that will mature into seeds.;
                           audioClipUrl: #ovaryVO;"></a-mixin>
@@ -147,7 +147,7 @@
                       src="./assets/Hibiscus_Base_Lateral.glb" preload="auto"></a-asset-item>
     <a-asset-item id="stamens" 
                       src="./assets/Hibiscus_Base_Stamens.gltf" preload="auto"></a-asset-item>
-    <a-asset-item id="overy" 
+    <a-asset-item id="ovary" 
                       src="./assets/Hibiscus_CrossSection.gltf" preload="auto"></a-asset-item>
 
 
@@ -418,14 +418,14 @@ gltf-model="#petalmodel5"
                gltf-model="#sexOrgans"
                  >
           </a-entity>
-          <a-entity id="hibiscusovery" 
-                mixin="overySpec" 
+          <a-entity id="hibiscusovary" 
+                mixin="ovarySpec" 
                  class="dissect"
-               hovercallout="hoverText: Overy;"
+               hovercallout="hoverText: Ovary;"
                 hoverable clickdrag="centerOffset: 0 0 0" gridable
                 shadow                 
                 scale="0.09 0.09 0.09"
-               gltf-model="#overy"
+               gltf-model="#ovary"
                  >
           </a-entity>
       </a-entity>
