@@ -44,6 +44,8 @@
   <script src="./linkhref.js"></script>
 <script src="./info-message.js"></script>
 
+<link rel="stylesheet" href="style.css">
+
 </head>
 <body>
   
@@ -53,6 +55,7 @@
       event-set__click="_event:click;"
          background="color:  #cd990a"
       info-message="htmlSrc: #messageText"
+      loading-screen="dotsColor: white; backgroundColor: #FAC800"
          >
   
 <!-- Media assets used throughout experience    -->
@@ -85,6 +88,7 @@
     <a-asset-item id="buttonSpecOff" src="./assets/buttons_spec_off.glb" preload="auto"></a-asset-item>
     <a-asset-item id="buttonSpecOn" src="./assets/buttons_spec_on.glb" preload="auto"></a-asset-item>
     <a-asset-item id="buttonExpand" src="./assets/buttons_expand.glb" preload="auto"></a-asset-item>
+    <a-assets-item id="brandinginsert" src="./assets/brandtangle.glb" preload="auto"></a-assets-item>
     <a-asset-item id="buttonGrid" src="./assets/buttons_grid.glb" preload="auto"></a-asset-item>
 
     <a-sound id="epicalyxVO" src="./assets/Tallis_Hibiscus_01.wav" preload="auto" crossorigin=“anonymous”></a-sound>
@@ -168,6 +172,12 @@
          
 <!-- Camera rig serves as user perspective. User cannot pivot camera and raycast emits from this view-->
   <a-entity id="rig" position="0 1.55 0.115" rotation="0 -19.1 0" >
+    <a-entity id="brandplane"
+                    gltf-model="#brandinginsert"
+                    position="-0.612 0.252 -0.997"
+                    rotation="90 0 0"
+                    scale="0.048 0.048 0.048"
+                    ></a-entity>
     <a-entity id="eyes"
               camera=""
               look-controls="mouseEnabled: false"
