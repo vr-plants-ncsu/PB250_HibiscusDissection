@@ -1,6 +1,7 @@
 var selectedExaminable;
 var selectedExaminableId = 0;
 var canTabSelect = false;
+var selectionEntity;
 
 AFRAME.registerComponent('tabselector',{
   schema: {
@@ -11,13 +12,15 @@ AFRAME.registerComponent('tabselector',{
   
   init: function(){
     //var listOfExaminable = document.querySelectorAll('[examinable]');
-    var entity = this.el;
-    var listOfExaminable = document.querySelectorAll('[examinable]');;
+    selectionEntity = this.el;
+    var listOfExaminable = document.querySelectorAll('[examinable]');
     window.addEventListener('keydown', function(evt){ 
+      if(selectedExaminableId === 0){
+        //research for bodies each loop
+        listOfExaminable = document.querySelectorAll('[examinable]');
+      }
       //make sure we skip any elements that don't have valid 3d objects
       while(listOfExaminable[selectedExaminableId].object3D === undefined){
-        listOfExaminable = document.querySelectorAll('[examinable]');
-        selectedExaminable = listOfExaminable[selectedExaminableId];
         selectedExaminableId = (selectedExaminableId + 1) % listOfExaminable.length;
       }
       //the Q key in decimol ascii
@@ -26,14 +29,22 @@ AFRAME.registerComponent('tabselector',{
         return;
       }
       selectedExaminable = listOfExaminable[selectedExaminableId];
+      console.log(selectedExaminable.getAttribute('id') + " is selec " + selectedExaminableId + " " + listOfExaminable.length);
       selectedExaminableId = (selectedExaminableId + 1) % listOfExaminable.length;
-      
       var examPos = new THREE.Vector3();
-      selectedExaminable.object3D.getWorldPosition(examPos);
-      
-      entity.setAttribute('position', examPos);
-      
-      
+      //selectedExaminable.object3D.getWorldPosition(examPos);
+      examPos.x -= selectedExaminable.components.examinable.data.centerOffset.x * 7.36;
+      examPos.y -= selectedExaminable.components.examinable.data.centerOffset.y * 7.36;
+      examPos.z -= selectedExaminable.components.examinable.data.centerOffset.z * 7.36;
+      //entity.setAttribute('position', examPos);
+      //selectionEntity.flushToDOM();
+      //var copy = selectionEntity.cloneNode();
+      //selectedExaminable.appendChild(copy);
+      //selectionEntity.parentNode.removeChild(selectionEntity);
+      //selectionEntity = copy;
+      //selectionEntity.setAttribute("position", selectedExaminable.components.examinable.data.centerOffset);
+      selectionEntity.object3D.parent=selectedExaminable.object3D;
+      selectionEntity.setAttribute("position", examPos);
       
       });
     
@@ -45,8 +56,9 @@ AFRAME.registerComponent('tabselector',{
       }
       
       if(selectedExaminable !== null){
+        console.log(selectedExaminable.getAttribute('id') + " is select ");
         let examBoxComp = document.querySelector('[ExamBox]').components.exambox;
-       examBoxComp.associate(selectedExaminable);
+       examBoxComp.associate(selectedExaminable, selectedExaminable.components.examinable.data.centerOffset);
       }
       
     });
